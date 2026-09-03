@@ -47,13 +47,13 @@ mvn test
 graph TD
     subgraph Adapter["1. Patron Adapter - Asistencia"]
         ControladorCheckIn["ControladorCheckIn"] --> ServicioAsistencia["ServicioAsistencia"]
-        QRCheckClientAdapter["QRCheckClientAdapter"] -.->|implementa| ServicioAsistencia
-        QRCheckClientAdapter -->|adapta y delega| QRCheckClient["QRCheckClient - SDK Externo Legado"]
+        QRCheckClientAdapter["QRCheckClientAdapter"] -->|implementa| ServicioAsistencia
+        QRCheckClientAdapter -->|adapta y delega| QRCheckClient["QRCheckClient - SDK Legado"]
     end
 
     subgraph Facade["2. Patron Facade - Certificados"]
         ControladorCertificados["ControladorCertificados"] --> ServicioCertificados["ServicioCertificados"]
-        EmisionCertificadosFacade["EmisionCertificadosFacade"] -.->|implementa| ServicioCertificados
+        EmisionCertificadosFacade["EmisionCertificadosFacade"] -->|implementa| ServicioCertificados
         EmisionCertificadosFacade --> ValidadorAsistencia["ValidadorAsistencia"]
         EmisionCertificadosFacade --> GeneradorCertificadoPDF["GeneradorCertificadoPDF"]
         EmisionCertificadosFacade --> FirmaDigitalService["FirmaDigitalService"]
@@ -61,17 +61,17 @@ graph TD
     end
 
     subgraph Decorator["3. Patron Decorator - Mejoras Dinamicas"]
-        CertificadoDecoratorBase["CertificadoDecoratorBase"] -.->|implementa| ServicioCertificados
-        CertificadoDecoratorBase o--> ServicioCertificados
-        MarcaAguaDecorator["MarcaAguaDecorator"] --|> CertificadoDecoratorBase
-        CodigoQRDecorator["CodigoQRDecorator"] --|> CertificadoDecoratorBase
-        TraduccionInglesDecorator["TraduccionInglesDecorator"] --|> CertificadoDecoratorBase
+        CertificadoDecoratorBase["CertificadoDecoratorBase"] -->|implementa| ServicioCertificados
+        CertificadoDecoratorBase -->|envuelve| ServicioCertificados
+        MarcaAguaDecorator["MarcaAguaDecorator"] -->|extiende| CertificadoDecoratorBase
+        CodigoQRDecorator["CodigoQRDecorator"] -->|extiende| CertificadoDecoratorBase
+        TraduccionInglesDecorator["TraduccionInglesDecorator"] -->|extiende| CertificadoDecoratorBase
     end
 
     subgraph Proxy["4. Patron Protection Proxy - Control de Acceso"]
-        ServicioCertificadosProxySeguridad["ServicioCertificadosProxySeguridad"] -.->|implementa| ServicioCertificados
+        ServicioCertificadosProxySeguridad["ServicioCertificadosProxySeguridad"] -->|implementa| ServicioCertificados
         ServicioCertificadosProxySeguridad --> ContextoUsuario["ContextoUsuario"]
-        ServicioCertificadosProxySeguridad -->|si rol ORGANIZADOR o ADMIN| ServicioCertificadosReal["ServicioCertificados Delegado"]
+        ServicioCertificadosProxySeguridad -->|si rol autorizado| ServicioCertificadosReal["ServicioCertificados Delegado"]
     end
 ```
 
